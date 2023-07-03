@@ -1,0 +1,81 @@
+﻿@model BookUpdateOrCreateModel
+
+@{
+    ViewData["Title"] = "Book Edit";
+}
+
+<div class="col col-md-6">
+    <container>
+        <h2>Book Edit</h2>
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" class="form-control" id="Name" asp-for="Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="authorName">Author Name:</label>
+                <input type="text" class="form-control" id="authorName" asp-for="AuthorName" />
+                <span asp-validation-for="AuthorName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="publisherName">Publisher Name:</label>
+                <input type="text" class="form-control" id="publisherName" asp-for="PublisherName" />
+                <span asp-validation-for="PublisherName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="pageCount">Page Count:</label>
+                <input type="number" class="form-control" id="pageCount" asp-for="PageCount" />
+                <span asp-validation-for="PageCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" class="form-control" id="category" asp-for="Category" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="publicationDate">Publication Date:</label>
+                <input type="date" class="form-control" id="publicationDate" asp-for="PublicationDate" />
+                <span asp-validation-for="PublicationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="stock">Stock:</label>
+                <input type="number" class="form-control" id="stock" asp-for="Stock" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <img id="imgPreview" src="@Model.ImageUrl" class="img-fluid" style="max-height: 100px" />
+                <br />
+                <label>Image</label>
+                <input type="file" id="formFile" class="form-control" data-default-file="" asp-for="Image" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </container>
+</div>
+
+@section Scripts
+    {
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <script>
+            swal({
+                title: '@Html.Raw(ViewBag.SuccessMessage.ToString())',
+                icon: 'success'
+            });
+        </script>
+    }
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <script>
+
+            sweetAlert({
+                title: '@Html.Raw(ViewBag.ErrorMessage.ToString())',
+                icon: 'error'
+            });
+        </script>
+    }
+}

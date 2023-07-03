@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Book List";
+}
+
+<div class="container">
+    <a asp-action="Create" class="btn btn-primary">Add New Book</a>
+    <br /><br />
+    <div class="table-responsive">
+        <table id="example" class="table table-striped nowrap" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Publisher</th>
+                    <th>Stock</th>
+                    <th>LoanedCount</th>
+                    <th>Edit</th>
+                    <th>Lent</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": {
+                    "url": "Book/GetBooks",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "order": [[1, 'asc']],
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "searchDelay": 1000,
+                "responsive": true,
+                "columns": [
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            console.log(data.imageUrl);
+                            return '<img id="imgPreview" src="' + data.imageUrl + '" width="100" height="100" />';
+                        }
+                    },
+                    { "data": "name", "name": "Name", "autoWidth": true },
+                    { "data": "authorName", "name": "Author", "autoWidth": true },
+                    { "data": "category", "name": "Category", "autoWidth": true },
+                    { "data": "publisherName", "name": "Publisher", "autoWidth": true },
+                    { "data": "stock", "name": "Stock", "autoWidth": true },
+                    { "data": "loanedCount", "name": "LoanedCount", "autoWidth": true },
+
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            return '<a class="btn btn-success" href="/Book/Edit/' + data.id + '">Edit</a>';
+                        }
+                    },
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            if (data.stock > data.loanedCount)
+                                return '<a class="btn btn-primary" href="/Lent/LentBook/' + data.id + '">Lent</a>';
+                            else
+                                return '<a class="btn btn-secondary disabled">Lent</a>';
+                        }
+                    }
+                ],
+
+            });
+
+            $('#example tbody').on('click', 'button', function () {
+                var data = table.row($(this).parents('tr')).data();
+                $("#bookDetailModel").modal("toggle");
+            });
+        });
+    </script>
+}

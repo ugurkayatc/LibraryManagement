@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Lent Book List";
+}
+
+<div class="container">
+    <br /><br />
+    <div class="table-responsive">
+        <table id="example" class="table table-striped nowrap" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Book Name</th>
+                    <th>User Name</th>
+                    <th>Created Date</th>
+                    <th>Return Date</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        function LentBook(id) {
+            $.ajax({
+                type: "POST",
+                url: "Lent/ReturnBook",
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    if (response.status === 'Success') {
+                        swal({
+                            title: response.message,
+                            icon: 'success'
+                        }).then(function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        swal({
+                            title: response.message,
+                            icon: 'error'
+                        });
+                    }
+                }
+            });
+        }
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": {
+                    "url": "Lent/GetLentBooks",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "ordering": false,
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "searchDelay": 1000,
+                "responsive": true,
+                "columns": [
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+
+                            return '<img src="' + data.book.imageUrl + '" width="100" height="100" />';
+                        }
+                    },
+                    { "data": "user.fullName", "name": "FullName", "autoWidth": true },
+                    { "data": "book.name", "name": "Name", "autoWidth": true },
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            return moment(data.createdDate).format("YYYY-MM-DD");
+                        }
+                    },
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            return moment(data.returnDate).format("YYYY-MM-DD");
+                        }
+                    },
+                    {
+                        data: null,
+                        autowidth: true,
+                        render: function (data, type, row) {
+                            return `<a class="btn btn-success" onclick="LentBook('${data.id}')">Return</a>`;
+                        }
+                    },
+                ],
+            });
+        });
+    </script>
+}

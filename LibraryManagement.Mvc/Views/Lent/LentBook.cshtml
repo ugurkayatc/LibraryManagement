@@ -1,0 +1,121 @@
+﻿@model LentBookCreateModel
+@{
+    ViewData["Title"] = "User List";
+}
+
+<div class="container">
+    <a asp-action="Create" asp-controller="User" class="btn btn-primary">Add New User</a>
+    <br /><br />
+    <div class="table-responsive">
+        <table id="example" class="table table-striped nowrap" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>FullName</th>
+                    <th>Email</th>
+                    <th>Gsm</th>
+                    <th>Lent</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="userDetailModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookDetailModelTitle">Lent Details</h5>
+                <button type="button" class="close btn btn-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group date">
+                    <label for="returnDate">Return Date</label>
+                    <input type="date" class="form-control" id="returnDate" asp-for="ReturnDate" />
+                    <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                </div>
+                <br />
+                <button type="submit" onclick="LentBook()" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        var userId;
+        var bookId = window.location.pathname.split('/').pop();
+
+        function LentBook() {
+            var returnDate = $("#returnDate").val();
+            if (returnDate === "") {
+                swal({
+                    title: "Please enter return date",
+                    icon: 'error'
+                });
+                return;
+            }
+
+
+            $.ajax({
+                type: "POST",
+                url: "/Lent/LentBook",
+                data: {
+                    userId: userId,
+                    bookId: bookId,
+                    returnDate: returnDate
+                },
+                success: function (response) {
+                    if (response.status === 'Success') {
+                        $("#userDetailModel").modal("toggle");
+                        swal({
+                            title: response.message,
+                            icon: 'success'
+                        });
+                    }
+                    else {
+                        swal({
+                            title: response.message,
+                            icon: 'error'
+                        });
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": {
+                    "url": "/User/GetUsers",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "searchDelay": 1000,
+                "columns": [
+                    { "data": "fullName", "name": "FullName", "autoWidth": true },
+                    { "data": "email", "name": "Email", "autoWidth": true },
+                    { "data": "gsm", "name": "Gsm", "autoWidth": true },
+                    {
+                        "data": null,
+                        "autowidth": true,
+                        "render": function (data, type, row) {
+                            return '<button class="btn btn-success">Lent Book</button>';
+                        }
+                    },
+                ],
+                "drawCallback": function (settings) {
+                    $('#example tbody button').on('click', function () {
+                        var data = table.row($(this).parents('tr')).data();
+                        userId = data.id;
+                        $("#userDetailModel").modal("toggle");
+                    });
+                }
+            });
+        });
+    </script>
+}
