@@ -12,6 +12,7 @@ This project is a software developed for library automation. It enables library 
 - MediatR (CQRS Pattern)
 - FluentValidation (Request Validation)
 - Serilog (Used for logging operations. Logs are stored in the database logs table.)
+  
 ![](https://d2an46wc102jd8.cloudfront.net/files/tgicons.png)
 
 ## Installation and Running
